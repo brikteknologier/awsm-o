@@ -1,0 +1,18 @@
+{
+  "name": "awsm-o",
+  "version": "0.0.0",
+  "description": "AWSM-O helps you with automating AWS instances",
+  "main": "awsm-o.js",
+  "author": "Magnus Hoff <magnus.hoff@brik.no>",
+  "license": "MIT",
+  "dependencies": {
+    "byline": "~3.1.2",
+    "bash": "0.0.1",
+    "csv": "~0.3.6",
+    "aws-sdk": "~2.0.0-rc1",
+    "async": "~0.2.9",
+    "tagged-logger": "~1.0.3",
+    "tagged-console-target": "~1.0.5",
+    "winston": "~0.7.2"
+  }
+}

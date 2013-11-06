@@ -134,12 +134,11 @@ Machine.prototype.scp = function (/* source, [target], callback */) {
 };
 
 Machine.prototype.powerOff = function (callback) {
-  async.series([
-    this.ssh.bind(this, ['sudo', 'poweroff']),
-    this.pollUntilState.bind(this, "stopped")
-  ],
-    callback
-  );
+  this.ec2.stopInstances({
+    InstanceIds: [ this.instanceId ]
+  }, function (err, data) {
+    callback(err);
+  });
 };
 
 Machine.prototype.terminate = function (callback) {

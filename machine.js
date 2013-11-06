@@ -2,12 +2,13 @@ var child_process = require('child_process');
 var bash = require('bash');
 var util = require('./util');
 
-function Machine(log, awsmo, ec2) {
-  if (!(this instanceof Machine)) return new Machine(log, awsmo, ec2);
+function Machine(log, awsmo, ec2, instanceId) {
+  if (!(this instanceof Machine)) return new Machine(log, awsmo, ec2, instanceId);
 
   this.log = log;
   this.awsmo = awsmo;
   this.ec2 = ec2;
+  this.instanceId = instanceId;
 }
 
 Machine.prototype.pollForPublicDnsName = function (callback) {

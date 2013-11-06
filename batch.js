@@ -9,10 +9,8 @@ function Batch(log, awsmo) {
   this.sequence = [];
 }
 
-Batch.prototype.loadEC2Instance = function (instanceId) {
-  var machineLogger = this.log.createSublogger(instanceId);
-  var machine = new BatchMachine(machineLogger, this.awsmo, this, instanceId);
-  return machine;
+Batch.prototype.Machine = function () {
+  return new BatchMachine(this.log, this.awsmo, this);
 };
 
 Batch.prototype.execute = function (callback) {

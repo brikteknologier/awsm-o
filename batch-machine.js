@@ -1,21 +1,23 @@
 var Machine = require('./machine');
 
 
-function BatchMachine(log, awsmo, batch, instanceId) {
-  if (!(this instanceof BatchMachine)) return new BatchMachine(log, awsmo, batch, instanceId);
+function BatchMachine(log, awsmo, batch) {
+  if (!(this instanceof BatchMachine)) return new BatchMachine(log, awsmo, batch);
 
   this.log = log;
+  this.awsmo = awsmo;
   this.batch = batch;
+}
 
+BatchMachine.prototype.loadRunning = function (instanceId) {
   this.batch.sequence.push(function (callback) {
     // TODO Get ec2 from awsmo.getEC2Object when memoization is implemented
-    this.machine = new Machine(log, awsmo, batch.ec2);
-    this.machine.instanceId = instanceId;
+    this.machine = new Machine(this.log.createSublogger(instanceId), this.awsmo, this.batch.ec2, instanceId);
     callback();
   }.bind(this));
 
   this.getPublicDNSName();
-}
+};
 
 BatchMachine.prototype.setSshCredentials = function (credentials) {
   this.batch.sequence.push(function (callback) {

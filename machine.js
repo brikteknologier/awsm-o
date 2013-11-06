@@ -1,4 +1,5 @@
 var child_process = require('child_process');
+var async = require('async');
 var bash = require('bash');
 var util = require('./util');
 
@@ -47,6 +48,22 @@ Machine.prototype.pollForSshAccess = function (callback) {
   );
 };
 
+Machine.prototype.pollUntilState = function (state, callback) {
+  util.pollUntil(
+    this.log.createSublogger('pollUntilState(' + JSON.stringify(state) + ')'),
+    function (callback) {
+      this.ec2.describeInstances({ InstanceIds: [ this.instanceId ] }, callback);
+    }.bind(this),
+    function (data) {
+      return data.Reservations[0].Instances[0].State.Name === state;
+    },
+    function (err, data) {
+      delete this.publicDnsName;
+      callback(err);
+    }.bind(this)
+  );
+};
+
 Machine.prototype.ssh = function (cmd, callback) {
   // TODO Assert state
   var knownHostsFile = util.getKnownHostsFile(this.instanceId);
@@ -68,14 +85,16 @@ Machine.prototype.ssh = function (cmd, callback) {
   this.log.info(bash.escape.apply(null, [sshExecutable].concat(arguments)));
 
   var child = child_process.spawn(sshExecutable, arguments);
-  util.outputToLogger(this.log.createSublogger(cmd), child);
+  util.outputToLogger(this.log.createSublogger(bash.escape.apply(bash, cmd)), child);
   child.stdin.end();
-  child.on('close', function (code) {
+  child.on('exit', function (code, signal) {
+    // TODO Handle this better:
+    // Make a descriptive new Error(<stuff>) if the exit was not OK
     callback(code);
   });
 };
 
-Machine.prototype.scp = function () {
+Machine.prototype.scp = function (/* source, [target], callback */) {
   var source, target, callback;
   if (arguments.length === 2) {
     source = arguments[0];
@@ -108,8 +127,26 @@ Machine.prototype.scp = function () {
   var child = child_process.spawn(scpExecutable, arguments);
   util.outputToLogger(this.log, child);
   child.stdin.end();
-  child.on('close', function (code) {
+  child.on('exit', function (code) {
+    // TODO Handle this better, like for ssh above
     callback(code);
+  });
+};
+
+Machine.prototype.powerOff = function (callback) {
+  async.series([
+    this.ssh.bind(this, ['sudo', 'poweroff']),
+    this.pollUntilState.bind(this, "stopped")
+  ],
+    callback
+  );
+};
+
+Machine.prototype.terminate = function (callback) {
+  this.ec2.terminateInstances({
+    InstanceIds: [ this.instanceId ]
+  }, function (err, data) {
+    callback(err);
   });
 };
 

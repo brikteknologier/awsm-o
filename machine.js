@@ -137,16 +137,18 @@ Machine.prototype.powerOff = function (callback) {
   this.ec2.stopInstances({
     InstanceIds: [ this.instanceId ]
   }, function (err, data) {
+    if (!err) delete this.publicDnsName;
     callback(err);
-  });
+  }.bind(this));
 };
 
 Machine.prototype.terminate = function (callback) {
   this.ec2.terminateInstances({
     InstanceIds: [ this.instanceId ]
   }, function (err, data) {
+    if (!err) delete this.publicDnsName;
     callback(err);
-  });
+  }.bind(this));
 };
 
 Machine.prototype.createAmi = function (baseName, amiDescription, callback) {

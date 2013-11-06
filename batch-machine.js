@@ -31,6 +31,14 @@ BatchMachine.prototype.ssh = function (cmd) {
   // TODO return a child_process like object?
 };
 
+BatchMachine.prototype.scp = function () {
+  var args = Array.prototype.slice.call(arguments);
+  this.batch.sequence.push(function (callback) {
+    this.machine.scp.apply(this.machine, args.concat(callback));
+  }.bind(this));
+  // TODO return a child_process like object?
+};
+
 BatchMachine.prototype.getPublicDNSName = function () {
   this.batch.sequence.push(function (callback) {
     this.machine.pollForPublicDnsName(callback);

@@ -61,13 +61,51 @@ Machine.prototype.ssh = function (cmd, callback) {
     "-i", sshKeyFile,
     "-l", remoteUser,
     publicDnsName,
-    bash.escape(cmd)
+    bash.escape.apply(bash, cmd)
   ];
 
   this.log.info(bash.escape.apply(null, [sshExecutable].concat(arguments)));
 
   var child = child_process.spawn(sshExecutable, arguments);
   util.outputToLogger(this.log.createSublogger(cmd), child);
+  child.stdin.end();
+  child.on('close', function (code) {
+    callback(code);
+  });
+};
+
+Machine.prototype.scp = function () {
+  var source, target, callback;
+  if (arguments.length === 2) {
+    source = arguments[0];
+    target = ".";
+    callback = arguments[1];
+  } else {
+    source = arguments[0];
+    target = arguments[1];
+    callback = arguments[2];
+  }
+
+  // TODO Assert state
+
+  var knownHostsFile = util.getKnownHostsFile(this.instanceId);
+  var sshKeyFile = this.awsmo.sshKeyMappings[this.sshCredentials.awsKeyName];
+  var remoteUser = this.sshCredentials.remoteUser;
+  var publicDnsName = this.publicDnsName;
+
+  var scpExecutable = "/usr/bin/scp";
+  var arguments = [
+    "-o", "UserKnownHostsFile=" + knownHostsFile,
+    "-o", "StrictHostKeyChecking=no", // Assume no MITM-attack on first connection #vulnerability #fixme
+    "-i", sshKeyFile,
+    source,
+    remoteUser + "@" + publicDnsName + ":" + target // TODO: escaping of sorts?
+  ];
+
+  this.log.info(bash.escape.apply(null, [scpExecutable].concat(arguments)));
+
+  var child = child_process.spawn(scpExecutable, arguments);
+  util.outputToLogger(this.log, child);
   child.stdin.end();
   child.on('close', function (code) {
     callback(code);

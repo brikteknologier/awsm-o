@@ -120,4 +120,14 @@ BatchMachine.prototype.terminate = function () {
   }.bind(this));
 };
 
+BatchMachine.prototype.createAmi = function (amiName, amiDescription, amiCallback) {
+  this.batch.sequence.push(function (callback) {
+    this.machine.createAmi(amiName, amiDescription, function (err, amiId) {
+      if (err) return callback(err);
+      amiCallback(amiId);
+      callback();
+    });
+  }.bind(this));
+};
+
 module.exports = BatchMachine;

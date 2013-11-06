@@ -150,5 +150,30 @@ Machine.prototype.terminate = function (callback) {
   });
 };
 
+Machine.prototype.createAmi = function (baseName, amiDescription, callback) {
+  var suffix = 1;
+  var createImageCallback = function (err, data) {
+    if (err) {
+      if (err.code === "InvalidAMIName.Duplicate") {
+        return createImage(baseName + " " + (++suffix), createImageCallback);
+      }
+      return callback(err);
+    }
+    var imageId = data.ImageId;
+    this.log.info("Created AMI " + imageId);
+    callback(null, imageId);
+  }.bind(this);
+
+  var createImage = function (name, callback) {
+    this.ec2.createImage({
+      InstanceId: this.instanceId,
+      Name: name,
+      Description: amiDescription
+    }, createImageCallback);
+  }.bind(this);
+
+  createImage(baseName, createImageCallback);
+};
+
 
 module.exports = Machine;

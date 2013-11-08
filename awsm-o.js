@@ -1,8 +1,6 @@
 var aws = require('aws-sdk');
-var Batch = require('./batch');
 var promise = require('augur');
 var inspect = require('util').inspect;
-var _ = require('underscore');
 var dispatchers = require('./dispatchers');
 
 function AwsmO(opts) {

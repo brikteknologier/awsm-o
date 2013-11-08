@@ -2,6 +2,7 @@ var aws = require('aws-sdk');
 var Batch = require('./batch');
 var promise = require('augur');
 var inspect = require('util').inspect;
+var _ = require('underscore');
 
 function createZeroLogger() {
   var winston = require('winston');
@@ -12,8 +13,11 @@ function createZeroLogger() {
   return new TaggedLogger(winstonLogger);
 }
 
-function AwsmO(spec) {
-  if (!(this instanceof AwsmO)) return new AwsmO(spec);
+function AwsmO(opts) {
+  if (!(this instanceof AwsmO)) return new AwsmO(opts);
+
+  this.log = opts.log || createZeroLogger();
+  this.opts = opts;
 
   if (!spec.awsCredentials) {
     throw new Error("awsCredentials must be specified for AwsmO constructor");
@@ -31,11 +35,6 @@ function AwsmO(spec) {
                       inspect(spec.awsCredentials));
     }
   } 
-
-  this.log = spec.log || createZeroLogger();
-
-  this.awsRegion = spec.awsRegion;
-  this.sshKeyMappings = spec.sshKeyMappings;
 }
 
 var nextBatchId = 1;

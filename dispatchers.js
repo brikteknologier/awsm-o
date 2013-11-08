@@ -1,7 +1,7 @@
 var async = require('async');
 var augur = require('augur');
  
-exports.asyncDispatcher = function() {
+exports.async = function() {
   return function(task) {
     var promise = augur();
     task(promise);
@@ -9,7 +9,7 @@ exports.asyncDispatcher = function() {
   };
 };
  
-exports.syncDispatcher = function() {
+exports.sync = function() {
   var queue = async.queue(function(task, callback) {
     task.fn(task.promise);
     task.promise.then(callback);

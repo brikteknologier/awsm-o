@@ -5,15 +5,6 @@ var inspect = require('util').inspect;
 var _ = require('underscore');
 var dispatchers = require('./dispatchers');
 
-function createZeroLogger() {
-  var winston = require('winston');
-  var TaggedConsoleTarget = require('tagged-console-target');
-  var TaggedLogger = require('tagged-logger');
-
-  var winstonLogger = new winston.Logger({ transports: [ ] });
-  return new TaggedLogger(winstonLogger);
-}
-
 function AwsmO(opts) {
   if (!(this instanceof AwsmO)) return new AwsmO(opts);
 
@@ -22,7 +13,7 @@ function AwsmO(opts) {
 
   this.credentials = getCredentials(opts.awsCredentials);
   this.ec2 = getEc2Object(this.credentials, opts.region);
-}
+};
 
 function getCredentials(credentials) {
   if (!credentials) 
@@ -39,8 +30,7 @@ function getCredentials(credentials) {
                     inspect(spec.awsCredentials));
   }
   return credentialsPromise;
-}
-
+};
 
 function getEc2Object(credentials, region) {
   var ec2 = promise();
@@ -53,6 +43,15 @@ function getEc2Object(credentials, region) {
     callback(null, ec2);
   });
   return ec2;
+};
+
+function createZeroLogger() {
+  var winston = require('winston');
+  var TaggedConsoleTarget = require('tagged-console-target');
+  var TaggedLogger = require('tagged-logger');
+
+  var winstonLogger = new winston.Logger({ transports: [ ] });
+  return new TaggedLogger(winstonLogger);
 };
 
 module.exports = AwsmO;

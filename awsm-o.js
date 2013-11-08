@@ -20,31 +20,29 @@ function AwsmO(opts) {
   this.log = opts.log || createZeroLogger();
   this.opts = opts;
 
-  if (!spec.awsCredentials) {
-    throw new Error("awsCredentials must be specified for AwsmO constructor");
-  } else {
-    this.credentials = promise();
-    if (typeof spec.awsCredentials == 'string') {
-      var csvCredentials = spec.awsCredentials;
-      require('./aws-credentials')(csvCredentials, this.credentials);
-    } else if (spec.awsCredentials.accessKeyId &&
-               spec.awsCredentials.secretAccessKey) {
-      this.credentials(null, spec.awsCredentials);
-    } else {
-      throw new Error("malformed awsCredentials - expected csv file or object " +
-                      "with accessKeyId & secretAccessKey, got " +
-                      inspect(spec.awsCredentials));
-    }
-  } 
+
+  this.credentials = createCredentialsPromise(opts.awsCredentials);
 }
 
-var nextBatchId = 1;
-AwsmO.prototype.Batch = function () {
-  return new Batch(this.log.createSublogger("batch#" + (nextBatchId++)), this);
-};
+function createCredentialsPromise(credentials) {
+  if (!credentials) 
+    throw new Error("awsCredentials must be specified for AwsmO constructor");
 
-AwsmO.prototype.getEC2Object = function (callback) {
-  // TODO Add memoization for this function
+  var credentialsPromise = promise();
+  if (typeof credentials == 'string') {
+    require('./aws-credentials')(credentials, credentialsPromise);
+  } else if (credentials.accessKeyId && credentials.secretAccessKey) {
+    credentialsPromise(null, credentials);
+  } else {
+    throw new Error("malformed awsCredentials - expected csv file or object " +
+                    "with accessKeyId & secretAccessKey, got " +
+                    inspect(spec.awsCredentials));
+  }
+  return credentialsPromise;
+}
+
+
+AwsmO.prototype.ec2 = function (callback) {
   this.getCredentials(function (err, credentials) {
     if (err) return callback(err);
 

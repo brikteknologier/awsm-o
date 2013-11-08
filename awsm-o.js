@@ -21,7 +21,7 @@ function AwsmO(opts) {
   this.opts = opts;
 
   this.credentials = getCredentials(opts.awsCredentials);
-  this.ec2 = createEc2Promis
+  this.ec2 = getEc2Object(this.credentials, opts.region);
 }
 
 function getCredentials(credentials) {
@@ -42,15 +42,17 @@ function getCredentials(credentials) {
 }
 
 
-AwsmO.prototype.ec2 = function (callback) {
-  this.getCredentials(function (err, credentials) {
-    if (err) return callback(err);
+function getEc2Object(credentials, region) {
+  var ec2 = promise();
+  credentials.then(function(err, credentials) {
+    if (err) return ec2(err);
 
     aws.config.update(credentials);
-    aws.config.update({ region: this.awsRegion });
+    aws.config.update({ region: region });
     var ec2 = new aws.EC2({ apiVersion: '2013-08-15' });
     callback(null, ec2);
-  }.bind(this));
+  });
+  return ec2;
 };
 
 module.exports = AwsmO;

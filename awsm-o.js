@@ -1,5 +1,7 @@
 var aws = require('aws-sdk');
 var Batch = require('./batch');
+var promise = require('augur');
+var inspect = require('util').inspect;
 
 function createZeroLogger() {
   var winston = require('winston');
@@ -13,15 +15,22 @@ function createZeroLogger() {
 function AwsmO(spec) {
   if (!(this instanceof AwsmO)) return new AwsmO(spec);
 
-  if (typeof spec.awsCredentials === 'string') {
-    var csvCredentials = spec.awsCredentials;
-    this.getCredentials = function (callback) {
-      require('./aws-credentials')(csvCredentials, callback);
-    };
-  } else {
-    // TODO Support inline specification of awsCredentials
+  if (!spec.awsCredentials) {
     throw new Error("awsCredentials must be specified for AwsmO constructor");
-  }
+  } else {
+    this.credentials = promise();
+    if (typeof spec.awsCredentials == 'string') {
+      var csvCredentials = spec.awsCredentials;
+      require('./aws-credentials')(csvCredentials, this.credentials);
+    } else if (spec.awsCredentials.accessKeyId &&
+               spec.awsCredentials.secretAccessKey) {
+      this.credentials(null, spec.awsCredentials);
+    } else {
+      throw new Error("malformed awsCredentials - expected csv file or object " +
+                      "with accessKeyId & secretAccessKey, got " +
+                      inspect(spec.awsCredentials));
+    }
+  } 
 
   this.log = spec.log || createZeroLogger();
 

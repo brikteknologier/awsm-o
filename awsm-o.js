@@ -20,11 +20,11 @@ function AwsmO(opts) {
   this.log = opts.log || createZeroLogger();
   this.opts = opts;
 
-
-  this.credentials = createCredentialsPromise(opts.awsCredentials);
+  this.credentials = getCredentials(opts.awsCredentials);
+  this.ec2 = createEc2Promis
 }
 
-function createCredentialsPromise(credentials) {
+function getCredentials(credentials) {
   if (!credentials) 
     throw new Error("awsCredentials must be specified for AwsmO constructor");
 

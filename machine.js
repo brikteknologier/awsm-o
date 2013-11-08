@@ -2,6 +2,7 @@ var child_process = require('child_process');
 var async = require('async');
 var bash = require('bash');
 var util = require('./util');
+var dispatchers = require('./dispatchers');
 
 function Machine(log, awsmo, ec2, instanceId) {
   if (!(this instanceof Machine)) return new Machine(log, awsmo, ec2, instanceId);

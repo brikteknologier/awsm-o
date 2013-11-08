@@ -3,6 +3,7 @@ var Batch = require('./batch');
 var promise = require('augur');
 var inspect = require('util').inspect;
 var _ = require('underscore');
+var dispatchers = require('./dispatchers');
 
 function createZeroLogger() {
   var winston = require('winston');

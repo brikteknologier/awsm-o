@@ -146,6 +146,9 @@ Copy a file to the instance.
 
 Create an AMI from this instance.
 
+__warning__: creating an AMI while an instance is running might have some
+unexpected results. it's recommended that you stop an before calling this.
+
 * `name` the name of the AMI. If the name is taken, a number is added at the end
   and incremented until a name is found that is not taken.
 * `description` the description of the AMI.

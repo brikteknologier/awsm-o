@@ -5,7 +5,28 @@ it similar to AWESOM-O)
 
 ![I am AWESOM-O!](http://i.imgur.com/Aggwojh.jpg)
 
-I help to automate certain aspects of AWS EC2 instances.
+I help automate working with EC2 instances from node.js. I'm a bit more friendly
+than amazon's AWS api.
 
+## example
 
-*I am currently under heavy development. Expect documentation to appear here in the future :)*
+```javascript
+var awsmo = require('awsm-o')({
+  awsCredentials: './credentials.csv',
+  region: 'eu-west-1',
+  sshCredentials: {
+    awsKeyName: 'amazon_key',
+    remoteUser: 'ubuntu'
+  },
+  sshKeyMappings: {
+    amazon_key: './amazon_key.pem'
+  } 
+});
+
+var instance = awsmo.getInstance('i-4b23f59e', function(err, instance) {
+  instance.ssh(['ifconfig'], function(err, output) {
+    console.log('ifconfig from i-4b23f59e:');
+    console.log(output);
+  });
+});
+```

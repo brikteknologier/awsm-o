@@ -62,3 +62,22 @@ Creates a new instance of AwsmO. Options are:
 * `log` (default = none) - the logger to use. should be a 
   [TaggedLogger](http://bitbucket.org/maghoff/tagged-logger)
 
+#### `awsmo.getInstance(instanceId [, callback])`
+
+Returns a new Ec2Instance object, with the given instanceId.
+
+#### 'awsmo.createInstance(opts [, callback])`
+
+Returns a new Ec2Instance object, using the given options to create it. Options
+are: 
+
+* `name` (default = `'AWSM-O instance'`) - the name to give the instance. 
+* `imageId` __(required)__ - the AMI ID to create this instance with.
+  i.e. `'ami-12345678'`
+* `key` __(required)__ - name of the private key to use i.e. `'myprivatekey'`
+* `securityGroupIds' __(required)__ - security groups that this instance should
+  belong to (array). i.e. `['sg-12345678', 'sg-45678901']`
+* `instanceType` (default = `'t1.micro'`) - type of instance to create
+* `availabilityZone` (default = `'eu-west-1'`) - availability zone to create the
+  instance in.
+

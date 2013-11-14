@@ -66,7 +66,7 @@ Creates a new instance of AwsmO. Options are:
 
 Returns a new Ec2Instance object, with the given instanceId.
 
-#### 'awsmo.createInstance(opts [, callback])`
+#### `awsmo.createInstance(opts [, callback])`
 
 Returns a new Ec2Instance object, using the given options to create it. Options
 are: 
@@ -80,4 +80,26 @@ are:
 * `instanceType` (default = `'t1.micro'`) - type of instance to create
 * `availabilityZone` (default = `'eu-west-1'`) - availability zone to create the
   instance in.
+
+### Ec2Instance
+
+Represents an EC2 instance. To get an Ec2Instance object you need to call either
+`awsmo.getInstance` or `awsmo.createInstance`.
+
+#### `ec2instance.getState(callback)`
+
+Fetch the state of the instance.
+
+* `callback(err, state)` - callback to call when the state is retrieved. `state`
+  is a string representing the current state, i.e. 'pending', 'running',
+  'stopping', 'stopped', 'terminated', etc.
+
+Example:
+
+```javascript
+var inst = awsmo.getInstance('i-12345787');
+inst.getState(function(err, state) {
+  console.log(state); // -> 'running'
+});
+```
 

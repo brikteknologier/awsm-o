@@ -30,3 +30,35 @@ var instance = awsmo.getInstance('i-4b23f59e', function(err, instance) {
   });
 });
 ```
+
+## install
+
+```
+npm i --save awsm-o
+```
+
+## documentation
+
+### `AwsmO(options)`
+
+Creates a new instance of AwsmO. Options are:
+
+* `awsCredentials` __(required)__ - either a path to your aws credentials csv
+  file, or an object with an `accessKeyId` and a `secretAccessKey`.
+* `region` __(required)__ - your AWS region string, i.e. `'us-west-1'`. 
+* `sshKeyMappings` __(required if using ssh/scp/creating an instance)__ - an 
+  object where each key represents the name of an ssh key used by EC2, and the
+  value is the location of that key on disk (relative to process.cwd()). The key
+  names need to align with EC2 in order to assign the correct key when creating an
+  instance. i.e `{ myprivatekey: '/home/jon/.ssh/myprivatekey.pem' }`. 
+* `sshCredentials` - the default SSH credentials for an instance to use when
+  attempting to connect with SSH. Should be an object with a `remoteUser` and
+  an `awsKeyName` that refers to a key in `sshKeyMappings`. i.e.
+  `{ remoteUser: 'ubuntu', awsKeyName: 'myprivatekey' }`
+* `sequential` (default = false) - if set to true, only one command will be
+  executed at a time. See [sequential mode](#sequential-mode) for more details.
+* `pollDelay` (default = 10000) - the default interval when polling an instance
+  for changes. in milliseconds.
+* `log` (default = none) - the logger to use. should be a 
+  [TaggedLogger](http://bitbucket.org/maghoff/tagged-logger)
+

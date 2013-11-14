@@ -103,3 +103,90 @@ inst.getState(function(err, state) {
 });
 ```
 
+#### `ec2instance.setName(name, callback)`
+
+Set the name of an instance.
+
+* `name` - the name to set on the instance.
+* `callback(err)` - called once the name has been set.
+
+#### `ec2instance.publicDnsName`
+
+A promise of the publicDnsName for this instance. Should only be used if you know
+the instance should have, or is about to receive, a public dns name.
+
+You can use it like a regular `getPublicDnsName` function by calling 
+`instance.publicDnsName.then(function(err, publicDnsName) { ...`.
+
+#### `start(callback)`, `stop(callback)`, `reboot(callback)`, `terminate(callback)`
+
+Lifecycle functions. Each one will perform the requested function, and callback
+once the desired state has been achieved. For example, calling `instance.stop()`
+will not call back until the instance has a state of `'stopped'`.
+
+#### `ec2instance.ssh(command, callback)`
+
+Run an command on the remote instance.
+
+* `command` an array with each part of the command to run. for example, 
+  `['ifconfig', 'eth0']`
+* `callback(err, output)` callback to be called once the command has been run.
+  `output` is a string with the stdout of the process. 
+
+#### `ec2instance.scp(from, [to ,] callback)`
+
+Copy a file to the instance.
+
+* `from` path to the file to copy (relative to the cwd).
+* `to` (default = `'.'`) where to copy the file on the instance
+* `callback(err, output)` callback to be called when the scp operation is
+  complete. 
+
+#### `ec2instance.createAmi(name, description, callback)`
+
+Create an AMI from this instance.
+
+* `name` the name of the AMI. If the name is taken, a number is added at the end
+  and incremented until a name is found that is not taken.
+* `description` the description of the AMI.
+* `callback(err, amiId)` callback to be called when the ami has been created. 
+
+<a name="sequential-mode"/>
+## Sequential Mode
+
+Normally, you can use awsm-o like any other node library, with nested callbacks
+to manage control flow, like this:
+
+```javascript
+var instance = awsmo.createInstance(..., function(err) {
+  instance.scp('./setup.sh', function(err) {
+    instance.ssh(['./setup.sh'], function(err) {
+      instance.createAmi('my amazing ami', 'its super amazing', function(err, amiid) {
+        instance.terminate();
+      });
+    });
+  });
+});
+```
+
+Not that you would ever write code like that, but you get the point. For cases
+such as this, we have sequential mode.
+
+If `sequential` option in the awsmo constructor is set to `true`, then we 
+can just do this:
+
+```javascript
+var instance = awsmo.createInstance(...);
+instance.scp('./setup.sh');
+instance.ssh(['./setup.sh']);
+instance.createAmi('my amazing ami', 'its super amazing', function(err, amiId) {
+  // I got an amiId!
+});
+instance.terminate();
+```
+
+Only one operation is run at a time, and each operation will automatically wait 
+for those before it to finish before running. The operation queue is contained
+inside awsmo, not each instance, so it will work over many instance objects assign
+well. If you want to have two simultaneous sequential modes, you'd have to create 
+two awsmo instances.

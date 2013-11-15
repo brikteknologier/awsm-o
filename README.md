@@ -93,7 +93,7 @@ Fetch the state of the instance.
 
 * `callback(err, state)` - callback to call when the state is retrieved. `state`
   is a string representing the current state, i.e. `'pending'`, `'running'`,
-  `'stopping'`, `'stopped'` or `'terminated'`.
+  `'stopping'`, `'stopped'`, `'shutting-down'` or `'terminated'`.
 
 Example:
 

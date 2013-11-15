@@ -45,15 +45,16 @@ Creates a new instance of AwsmO. Options are:
 
 * `awsCredentials` __(required)__ - either a path to your aws credentials csv
   file, or an object with an `accessKeyId` and a `secretAccessKey`.
-* `region` __(required)__ - your AWS region string, i.e. `'us-west-1'`. 
+* `region` __(required)__ - your AWS region string, for example `'us-west-1'`.
 * `sshKeyMappings` __(required if using ssh/scp/creating an instance)__ - an 
   object where each key represents the name of an ssh key used by EC2, and the
-  value is the location of that key on disk (relative to process.cwd()). The key
+  value is the location of that key on disk (relative to `process.cwd()`). The key
   names need to align with EC2 in order to assign the correct key when creating an
-  instance. i.e `{ myprivatekey: '/home/jon/.ssh/myprivatekey.pem' }`. 
-* `sshCredentials` - the default SSH credentials for an instance to use when
+  instance, for example `{ myprivatekey: '/home/jon/.ssh/myprivatekey.pem' }`
+  if the key name in AWS is `myprivatekey`.
+* `sshCredentials` (optional) - the default SSH credentials for an instance to use when
   attempting to connect with SSH. Should be an object with a `remoteUser` and
-  an `awsKeyName` that refers to a key in `sshKeyMappings`. i.e.
+  an `awsKeyName` that refers to a key in `sshKeyMappings`, for example
   `{ remoteUser: 'ubuntu', awsKeyName: 'myprivatekey' }`
 * `sequential` (default = false) - if set to true, only one command will be
   executed at a time. See [sequential mode](#sequential-mode) for more details.
@@ -91,8 +92,8 @@ Represents an EC2 instance. To get an Ec2Instance object you need to call either
 Fetch the state of the instance.
 
 * `callback(err, state)` - callback to call when the state is retrieved. `state`
-  is a string representing the current state, i.e. 'pending', 'running',
-  'stopping', 'stopped', 'terminated', etc.
+  is a string representing the current state, i.e. `'pending'`, `'running'`,
+  `'stopping'`, `'stopped'` or `'terminated'`.
 
 Example:
 
@@ -126,7 +127,7 @@ will not call back until the instance has a state of `'stopped'`.
 
 #### `ec2instance.ssh(command, callback)`
 
-Run an command on the remote instance.
+Run a command on the remote instance.
 
 * `command` an array with each part of the command to run. for example, 
   `['ifconfig', 'eth0']`

@@ -78,9 +78,9 @@ are:
 * `key` __(required)__ - name of the private key to use i.e. `'myprivatekey'`
 * `securityGroupIds' __(required)__ - security groups that this instance should
   belong to (array). i.e. `['sg-12345678', 'sg-45678901']`
+* `availabilityZone` __(required)__ - availability zone to create the
+  instance in, for example `"eu-west-1b"`.
 * `instanceType` (default = `'t1.micro'`) - type of instance to create
-* `availabilityZone` (default = `'eu-west-1'`) - availability zone to create the
-  instance in.
 
 ### Ec2Instance
 

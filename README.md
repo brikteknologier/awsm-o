@@ -23,7 +23,7 @@ var awsmo = require('awsm-o')({
   } 
 });
 
-var instance = awsmo.getInstance('i-4b23f59e', function(err, instance) {
+var instance = awsmo.getEc2Instance('i-4b23f59e', function(err, instance) {
   instance.ssh(['ifconfig'], function(err, output) {
     console.log('ifconfig from i-4b23f59e:');
     console.log(output);
@@ -63,11 +63,11 @@ Creates a new instance of AwsmO. Options are:
 * `log` (default = none) - the logger to use. should be a 
   [TaggedLogger](http://bitbucket.org/maghoff/tagged-logger)
 
-#### `awsmo.getInstance(instanceId [, callback])`
+#### `awsmo.getEc2Instance(instanceId [, callback])`
 
 Returns a new Ec2Instance object, with the given instanceId.
 
-#### `awsmo.createInstance(opts [, callback])`
+#### `awsmo.createEc2Instance(opts [, callback])`
 
 Returns a new Ec2Instance object, using the given options to create it. Options
 are: 
@@ -85,7 +85,7 @@ are:
 ### Ec2Instance
 
 Represents an EC2 instance. To get an Ec2Instance object you need to call either
-`awsmo.getInstance` or `awsmo.createInstance`.
+`awsmo.getEc2Instance` or `awsmo.createEc2Instance`.
 
 #### `ec2instance.getState(callback)`
 
@@ -98,7 +98,7 @@ Fetch the state of the instance.
 Example:
 
 ```javascript
-var inst = awsmo.getInstance('i-12345787');
+var inst = awsmo.getEc2Instance('i-12345787');
 inst.getState(function(err, state) {
   console.log(state); // -> 'running'
 });
@@ -162,7 +162,7 @@ Normally, you can use awsm-o like any other node library, with nested callbacks
 to manage control flow, like this:
 
 ```javascript
-var instance = awsmo.createInstance(..., function(err) {
+var instance = awsmo.createEc2Instance(..., function(err) {
   instance.scp('./setup.sh', function(err) {
     instance.ssh(['./setup.sh'], function(err) {
       instance.createAmi('my amazing ami', 'its super amazing', function(err, amiid) {
@@ -180,7 +180,7 @@ If `sequential` option in the awsmo constructor is set to `true`, then we
 can just do this:
 
 ```javascript
-var instance = awsmo.createInstance(...);
+var instance = awsmo.createEc2Instance(...);
 instance.scp('./setup.sh');
 instance.ssh(['./setup.sh']);
 instance.createAmi('my amazing ami', 'its super amazing', function(err, amiId) {

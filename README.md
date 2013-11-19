@@ -14,8 +14,7 @@ than amazon's AWS api.
 var awsmo = require('awsm-o')({
   awsCredentials: './credentials.csv',
   region: 'eu-west-1',
-  sshCredentials: {
-    awsKeyName: 'amazon_key',
+  instanceDefaults: {
     remoteUser: 'ubuntu'
   },
   sshKeyMappings: {
@@ -34,7 +33,7 @@ var instance = awsmo.getEc2Instance('i-4b23f59e', function(err, instance) {
 ## install
 
 ```
-npm i --save awsm-o
+npm install --save awsm-o
 ```
 
 ## documentation
@@ -52,10 +51,11 @@ Creates a new instance of AwsmO. Options are:
   names need to align with EC2 in order to assign the correct key when creating an
   instance, for example `{ myprivatekey: '/home/jon/.ssh/myprivatekey.pem' }`
   if the key name in AWS is `myprivatekey`.
-* `sshCredentials` (optional) - the default SSH credentials for an instance to use when
-  attempting to connect with SSH. Should be an object with a `remoteUser` and
-  an `awsKeyName` that refers to a key in `sshKeyMappings`, for example
-  `{ remoteUser: 'ubuntu', awsKeyName: 'myprivatekey' }`
+* `instanceDefaults` (optional) - an object of options used to initialize
+  `Ec2Instance` objects. See [`awsmo.createEc2Instance(opts [, callback])`](#createEc2Instance)
+  for details on these options. It can be convenient to put settings here if
+  they would be the same for every instance. Examples of good candidates for
+  this treatment are `remoteUser` and `availabilityZone`.
 * `sequential` (default = false) - if set to true, only one command will be
   executed at a time. See [sequential mode](#sequential-mode) for more details.
 * `pollDelay` (default = 10000) - the default interval when polling an instance
@@ -67,19 +67,31 @@ Creates a new instance of AwsmO. Options are:
 
 Returns a new Ec2Instance object, with the given instanceId.
 
+AWSM-O will query for details about this instance, and determine the correct
+SSH key to use for accessing this instance based on the key name used for this
+instance and the `sshKeyMappings` supplied in the `AwsmO` constructor.
+
+<a name="createEc2Instance"/>
 #### `awsmo.createEc2Instance(opts [, callback])`
 
-Returns a new Ec2Instance object, using the given options to create it. Options
-are: 
+Returns a new Ec2Instance object, using the given options to create it.
+
+Options may be supplied here or as `instanceDefaults` in the `AwsmO` constructor.
+Options supplied here take precedence over those supplied as `instanceDefaults`.
+
+The options are:
 
 * `name` (default = `'AWSM-O instance'`) - the name to give the instance. 
-* `imageId` __(required)__ - the AMI ID to create this instance with.
-  i.e. `'ami-12345678'`
-* `key` __(required)__ - name of the private key to use i.e. `'myprivatekey'`
+* `imageId` __(required)__ - the AMI ID to create this instance with,
+  for example `'ami-12345678'`
+* `awsKeyName` __(required)__ - name of the ssh key to use, for example
+  `'myprivatekey'`
+* `remoteUser` __(required for ssh access)__ - name of the remote user to use
+  for ssh access, for example `'ubuntu'`
 * `securityGroupIds` __(required)__ - security groups that this instance should
-  belong to (array). i.e. `['sg-12345678', 'sg-45678901']`
+  belong to (array), for example `['sg-12345678', 'sg-45678901']`
 * `availabilityZone` __(required)__ - availability zone to create the
-  instance in, for example `"eu-west-1b"`.
+  instance in, for example `"eu-west-1b"`
 * `instanceType` (default = `'t1.micro'`) - type of instance to create
 
 ### Ec2Instance

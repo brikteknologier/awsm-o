@@ -1,6 +1,6 @@
 {
   "name": "awsm-o",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "AWSM-O helps you with automating AWS instances",
   "main": "lib/awsm-o.js",
   "author": "Magnus Hoff <magnus.hoff@brik.no>",

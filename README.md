@@ -169,15 +169,17 @@ Copy a file to the instance.
 * `callback(err, output)` callback to be called when the scp operation is
   complete. 
 
-#### `ec2instance.createAmi(name, description, callback)`
+#### `ec2instance.createAmi(name, description, [dontStop, ] callback)`
 
-Create an AMI from this instance.
-
-The instance will be stopped before the AMI is created.
+Create an AMI from this instance. By default, the instance will be stopped first
+in order to create the AMI, but you can change this behaviour by settings
+`dontStop` to true.
 
 * `name` the name of the AMI. If the name is taken, AWSM-O will generate a
    unique name by appending a number to the given name.
 * `description` the description of the AMI.
+* `dontStop` (optional, default=`false`) if set to true, the instance will not 
+  be stopped before creating the AMI.
 * `callback(err, amiId)` callback to be called when the ami has been created. 
 
 <a name="sequential-mode"/>

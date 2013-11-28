@@ -63,17 +63,18 @@ Creates a new instance of AwsmO. Options are:
 * `log` (default = none) - the logger to use. should be a 
   [TaggedLogger](http://bitbucket.org/maghoff/tagged-logger). A simple way to
   integrate with whatever logger you currently might be using is to supply an
-  adapter: ```
-log: new TaggedLogger({
-  log: function (level, msg, meta) {
-    // level is a string; "info", "warn" or "error"
-    // msg is the log message
-    // meta has timestamp, which is a Date object, and tags, which is a list
-    // of tags describing the context from which this message is logged
-    console.log(level, meta.tags, msg);
-  }
-})
-```
+  adapter: 
+  ```
+  log: new TaggedLogger({
+    log: function (level, msg, meta) {
+      // level is a string; "info", "warn" or "error"
+      // msg is the log message
+      // meta has timestamp, which is a Date object, and tags, which is a list
+      // of tags describing the context from which this message is logged
+      console.log(level, meta.tags, msg);
+    }
+  })
+  ```
 
 #### `awsmo.getEc2Instance(instanceId [, callback])`
 
